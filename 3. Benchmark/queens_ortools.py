@@ -85,5 +85,5 @@ def main(board_size: int) -> None:
 
 
 if __name__ == "__main__":
-    size = 10
+    size = 11
     main(size)
