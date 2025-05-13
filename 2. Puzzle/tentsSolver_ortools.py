@@ -20,7 +20,7 @@ class TentsSolverORTools:
     def get_solution(self):
         self._grid_ortools = [[self._model.NewBoolVar(f"grid_{r}_{c}") for c in range(self.columns_number)] for r in range(self.rows_number)]
         self._add_constraints()
-        
+
         status = self._solver.Solve(self._model)
         if status == cp_model.OPTIMAL or status == cp_model.FEASIBLE:
             grid = [[1 if self._solver.Value(self._grid_ortools[r][c]) else 0 for c in range(self.columns_number)] for r in range(self.rows_number)]
@@ -38,7 +38,7 @@ class TentsSolverORTools:
     def _add_sum_constraints(self):
         for i in range(self.rows_number):
             self._model.Add(sum(self._grid_ortools[i]) == self.rows_tents_numbers[i])
-        
+
         for j in range(self.columns_number):
             column_sum = sum(self._grid_ortools[i][j] for i in range(self.rows_number))
             self._model.Add(column_sum == self.columns_tents_numbers[j])
@@ -54,27 +54,27 @@ class TentsSolverORTools:
             for c in range(self.columns_number):
                 # Check all 8 adjacent cells
                 adjacent_cells = []
-                
+
                 # Horizontal and vertical adjacents
                 if r > 0:
-                    adjacent_cells.append(self._grid_ortools[r-1][c])
+                    adjacent_cells.append(self._grid_ortools[r - 1][c])
                 if r < self.rows_number - 1:
-                    adjacent_cells.append(self._grid_ortools[r+1][c])
+                    adjacent_cells.append(self._grid_ortools[r + 1][c])
                 if c > 0:
-                    adjacent_cells.append(self._grid_ortools[r][c-1])
+                    adjacent_cells.append(self._grid_ortools[r][c - 1])
                 if c < self.columns_number - 1:
-                    adjacent_cells.append(self._grid_ortools[r][c+1])
-                
+                    adjacent_cells.append(self._grid_ortools[r][c + 1])
+
                 # Diagonal adjacents
                 if r > 0 and c > 0:
-                    adjacent_cells.append(self._grid_ortools[r-1][c-1])
+                    adjacent_cells.append(self._grid_ortools[r - 1][c - 1])
                 if r > 0 and c < self.columns_number - 1:
-                    adjacent_cells.append(self._grid_ortools[r-1][c+1])
+                    adjacent_cells.append(self._grid_ortools[r - 1][c + 1])
                 if r < self.rows_number - 1 and c > 0:
-                    adjacent_cells.append(self._grid_ortools[r+1][c-1])
+                    adjacent_cells.append(self._grid_ortools[r + 1][c - 1])
                 if r < self.rows_number - 1 and c < self.columns_number - 1:
-                    adjacent_cells.append(self._grid_ortools[r+1][c+1])
-                
+                    adjacent_cells.append(self._grid_ortools[r + 1][c + 1])
+
                 # If this cell is a tent, all adjacent cells cannot be tents
                 for adjacent_cell in adjacent_cells:
                     self._model.AddImplication(self._grid_ortools[r][c], adjacent_cell.Not())
@@ -109,6 +109,7 @@ T = TentsSolverORTools.tree_value
 _ = 0
 
 
+# noinspection DuplicatedCode
 class TentsSolverORToolsTests(TestCase):
     def test_solution_6x6(self):
         grid = [
