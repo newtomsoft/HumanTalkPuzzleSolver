@@ -1,3 +1,5 @@
+**résoudre facilement les puzzles logiques en codant**
+
 Ce talk explore comment résoudre des puzzles logiques à travers des techniques de codage simples.
 
 Nous aborderons divers types de puzzles et montrerons comment les traduire en algorithmes avec des langages de programmation courants (C# / Python)
