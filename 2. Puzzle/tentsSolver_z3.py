@@ -1,6 +1,7 @@
 ﻿from unittest import TestCase
 
 import z3
+from z3 import is_true
 
 
 class TentsSolverZ3:
@@ -22,7 +23,7 @@ class TentsSolverZ3:
         if self._solver.check() == z3.unsat:
             return [[]]
         model = self._solver.model()
-        grid = [[1 if z3.is_true(model.evaluate(self._grid_z3[r][c])) else 0 for c in range(self.columns_number)] for r in range(self.rows_number)]
+        grid = [[1 if is_true(model.evaluate(self._grid_z3[r][c])) else 0 for c in range(self.columns_number)] for r in range(self.rows_number)]
         return grid
 
     def _add_constraints(self):
