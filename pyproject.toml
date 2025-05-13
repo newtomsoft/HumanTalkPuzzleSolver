@@ -1,0 +1,9 @@
+[project]
+name = "humantalkpuzzlesolver"
+version = "0.1.0"
+description = "Add your description here"
+requires-python = ">=3.13"
+dependencies = [
+    "ortools>=9.12.4544",
+    "z3-solver>=4.12.2.0",
+]
