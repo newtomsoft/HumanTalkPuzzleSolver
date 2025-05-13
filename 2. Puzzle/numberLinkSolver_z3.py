@@ -70,6 +70,7 @@ class NumberLinkSolverZ3:
                     self._solver.add(Sum(same_value_neighbors) == 2)
 
 
+# noinspection PyShadowingNames
 class NumberLinkSolverTests(TestCase):
     def test_solution_basic_grid(self):
         grid = [
@@ -124,30 +125,3 @@ class NumberLinkSolverTests(TestCase):
             [6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6],
         ]
         self.assertEqual(expected_solution, solution)
-
-
-if __name__ == "__main__":
-    # Run the basic grid test
-    print("Testing basic grid...")
-    grid = [
-        [1, 2, _],
-        [_, 3, 2],
-        [1, _, 3]
-    ]
-    game_solver = NumberLinkSolverZ3(grid)
-    solution = game_solver.get_solution()
-    expected_solution = [
-        [1, 2, 2],
-        [1, 3, 2],
-        [1, 3, 3],
-    ]
-    print("Solution:")
-    for row in solution:
-        print(row)
-    print("Expected solution:")
-    for row in expected_solution:
-        print(row)
-    print("Test passed:", solution == expected_solution)
-
-    # We won't run the 15x15 test by default as it might take too long
-    print("\nZ3 implementation of NumberLinkSolver is complete and tested successfully.")
