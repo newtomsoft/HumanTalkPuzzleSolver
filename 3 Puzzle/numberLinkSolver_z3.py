@@ -1,27 +1,31 @@
-﻿from unittest import TestCase
+from unittest import TestCase
 
-from ortools.sat.python import cp_model
+from z3 import Solver, Int, sat, If, And, Or, Sum
 
 _ = -1
 
 
-class NumberLinkSolverORTools:
+class NumberLinkSolverZ3:
     def __init__(self, grid: list[list]):
         self._grid = grid
         self.rows_number = len(grid)
         self.columns_number = len(grid[0])
-        self._model = cp_model.CpModel()
-        self._solver = cp_model.CpSolver()
-        self._grid_ortools = None
-        self._previous_solution_constraints = []
+        self._solver = Solver()
+        self._grid_z3 = None
 
     def get_solution(self):
-        self._grid_ortools = [[self._model.NewIntVar(0, max(self.rows_number, self.columns_number), f"cell{r}_{c}") for c in range(self.columns_number)] for r in range(self.rows_number)]
+        self._grid_z3 = {}
+        for r in range(self.rows_number):
+            for c in range(self.columns_number):
+                self._grid_z3[(r, c)] = Int(f"cell{r}_{c}")
+                self._solver.add(self._grid_z3[(r, c)] >= 1)
+                self._solver.add(self._grid_z3[(r, c)] <= max(self.rows_number, self.columns_number))
+
         self._add_constraints()
 
-        status = self._solver.Solve(self._model)
-        if status == cp_model.OPTIMAL or status == cp_model.FEASIBLE:
-            return [[(self._solver.Value(self._grid_ortools[r][c])) for c in range(self.columns_number)] for r in range(self.rows_number)]
+        if self._solver.check() == sat:
+            model = self._solver.model()
+            return [[model.evaluate(self._grid_z3[(r, c)]).as_long() for c in range(self.columns_number)] for r in range(self.rows_number)]
         else:
             return [[]]
 
@@ -34,44 +38,45 @@ class NumberLinkSolverORTools:
             for c in range(self.columns_number):
                 value = self._grid[r][c]
                 if value >= 1:
-                    self._model.Add(self._grid_ortools[r][c] == value)
-                else:
-                    self._model.Add(self._grid_ortools[r][c] >= 1)
+                    self._solver.add(self._grid_z3[(r, c)] == value)
 
     def _add_neighbors_count_constraints(self):
         for r in range(self.rows_number):
             for c in range(self.columns_number):
-                neighbors_values = []
+                neighbors_positions = []
                 if r > 0:
-                    neighbors_values.append(self._grid_ortools[r - 1][c])
+                    neighbors_positions.append((r - 1, c))
                 if r < self.rows_number - 1:
-                    neighbors_values.append(self._grid_ortools[r + 1][c])
+                    neighbors_positions.append((r + 1, c))
                 if c > 0:
-                    neighbors_values.append(self._grid_ortools[r][c - 1])
+                    neighbors_positions.append((r, c - 1))
                 if c < self.columns_number - 1:
-                    neighbors_values.append(self._grid_ortools[r][c + 1])
+                    neighbors_positions.append((r, c + 1))
 
+                # Count neighbors with the same value
                 same_value_neighbors = []
-                for index, neighbor_value in enumerate(neighbors_values):
-                    same_value = self._model.NewBoolVar(f"same_value_{index}_{neighbor_value}")
-                    self._model.Add(self._grid_ortools[r][c] == neighbor_value).OnlyEnforceIf(same_value)
-                    self._model.Add(self._grid_ortools[r][c] != neighbor_value).OnlyEnforceIf(same_value.Not())
+                for neighbor_pos in neighbors_positions:
+                    same_value = self._grid_z3[(r, c)] == self._grid_z3[neighbor_pos]
                     same_value_neighbors.append(same_value)
 
+                # Apply the constraint based on whether the cell is a number or a path
                 if self._grid[r][c] >= 1:
-                    self._model.Add(sum(same_value_neighbors) == 1)
+                    # Number cells must have exactly one neighbor with the same value
+                    self._solver.add(Sum(same_value_neighbors) == 1)
                 else:
-                    self._model.Add(sum(same_value_neighbors) == 2)
+                    # Path cells must have exactly two neighbors with the same value
+                    self._solver.add(Sum(same_value_neighbors) == 2)
 
 
-class NumberLinkSolverTests(TestCase):
+# noinspection PyShadowingNames
+class Test(TestCase):
     def test_solution_basic_grid(self):
         grid = [
             [1, 2, _],
             [_, 3, 2],
             [1, _, 3]
         ]
-        game_solver = NumberLinkSolverORTools(grid)
+        game_solver = NumberLinkSolverZ3(grid)
         solution = game_solver.get_solution()
         expected_solution = [
             [1, 2, 2],
@@ -98,7 +103,7 @@ class NumberLinkSolverTests(TestCase):
             [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
             [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
         ]
-        game_solver = NumberLinkSolverORTools(grid)
+        game_solver = NumberLinkSolverZ3(grid)
         solution = game_solver.get_solution()
         expected_solution = [
             [6, 6, 6, 6, 6, 6, 6, 6, 3, 4, 9, 6, 6, 6, 6],
