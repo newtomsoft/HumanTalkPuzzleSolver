@@ -72,12 +72,12 @@ def solve_and_draw_tsp(distances, points, nom_solveur, fonction_solveur, seed: i
 
 
 if __name__ == "__main__":
-    n_cities = 300
+    n_cities = 500
     seed = random.randint(0, 10_000)
     print(f"seed: {seed}")
     points, distances = generate_random_tsp(n_cities, seed)
     solve_and_draw_tsp(distances, points, "OR-Tools", tspOrTools.solve_tsp_with_ortools, seed)
     solve_and_draw_tsp(distances, points, "Manual Heuristic", tspManualHeuristic.solve_tsp_heuristic, seed)
-    solve_and_draw_tsp(distances, points, "PuLP", tspPulp.solve_tsp_with_pulp, seed)
-    solve_and_draw_tsp(distances, points, "SCIP", tspScip.solve_tsp_with_scip, seed)
+    # solve_and_draw_tsp(distances, points, "PuLP", tspPulp.solve_tsp_with_pulp, seed)
+    # solve_and_draw_tsp(distances, points, "SCIP", tspScip.solve_tsp_with_scip, seed)
     # solve_and_draw_tsp(distances, points, "Z3", tspZ3.solve_tsp_with_z3, seed)
