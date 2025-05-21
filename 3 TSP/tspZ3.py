@@ -13,12 +13,12 @@ def solve_tsp_with_z3(distances):
 
     total_distance = 0
     for i in range(n):
-        current = tour[i]
+        current_city = tour[i]
         next_city = tour[(i + 1) % n]
         distance = 0
         for j in range(n):
             for k in range(n):
-                distance = If(And(current == j, next_city == k), distances[j][k], distance)
+                distance = If(And(current_city == j, next_city == k), distances[j][k], distance)
         total_distance += distance
 
     solver.minimize(total_distance)
