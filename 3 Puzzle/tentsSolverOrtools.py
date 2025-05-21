@@ -3,6 +3,7 @@ from unittest import TestCase
 from ortools.sat.python import cp_model
 
 
+# noinspection DuplicatedCode
 class TentsSolverORTools:
     tree_value = -1
 

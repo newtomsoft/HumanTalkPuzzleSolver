@@ -1,9 +1,10 @@
 ﻿from unittest import TestCase
 
 import z3
-from z3 import is_true
+from z3 import is_true, Implies, Sum, Not
 
 
+# noinspection DuplicatedCode
 class TentsSolverZ3:
     tree_value = -1
 
@@ -36,43 +37,43 @@ class TentsSolverZ3:
     def _add_sum_constraints(self):
         constraints = []
         for i, row in enumerate(self._grid_z3):
-            constraints.append(z3.Sum([z3.If(cell, 1, 0) for cell in row]) == self.rows_tents_numbers[i])
+            constraints.append(Sum([z3.If(cell, 1, 0) for cell in row]) == self.rows_tents_numbers[i])
         for i, column in enumerate(zip(*self._grid_z3)):
-            constraints.append(z3.Sum([z3.If(cell, 1, 0) for cell in column]) == self.columns_tents_numbers[i])
+            constraints.append(Sum([z3.If(cell, 1, 0) for cell in column]) == self.columns_tents_numbers[i])
         self._solver.add(constraints)
 
     def add_free_if_no_tent_near_constraint(self):
         for r in range(self.rows_number):
             for c in range(self.columns_number):
                 if all(neighbor_value != TentsSolverZ3.tree_value for neighbor_value in self._get_neighbors_values(self._grid, r, c)):
-                    self._solver.add(z3.Not(self._grid_z3[r][c]))
+                    self._solver.add(Not(self._grid_z3[r][c]))
 
     def add_no_adjacent_tent_constraint(self):
         for r in range(self.rows_number):
             for c in range(self.columns_number):
                 if r > 0:
-                    self._solver.add(z3.Implies(self._grid_z3[r][c], z3.Not(self._grid_z3[r - 1][c])))
+                    self._solver.add(Implies(self._grid_z3[r][c], Not(self._grid_z3[r - 1][c])))
                     if c > 0:
-                        self._solver.add(z3.Implies(self._grid_z3[r][c], z3.Not(self._grid_z3[r][c - 1])))
-                        self._solver.add(z3.Implies(self._grid_z3[r][c], z3.Not(self._grid_z3[r - 1][c - 1])))
+                        self._solver.add(Implies(self._grid_z3[r][c], Not(self._grid_z3[r][c - 1])))
+                        self._solver.add(Implies(self._grid_z3[r][c], Not(self._grid_z3[r - 1][c - 1])))
                     if c < self.columns_number - 1:
-                        self._solver.add(z3.Implies(self._grid_z3[r][c], z3.Not(self._grid_z3[r][c + 1])))
-                        self._solver.add(z3.Implies(self._grid_z3[r][c], z3.Not(self._grid_z3[r - 1][c + 1])))
+                        self._solver.add(Implies(self._grid_z3[r][c], Not(self._grid_z3[r][c + 1])))
+                        self._solver.add(Implies(self._grid_z3[r][c], Not(self._grid_z3[r - 1][c + 1])))
 
                 if r < self.rows_number - 1:
-                    self._solver.add(z3.Implies(self._grid_z3[r][c], z3.Not(self._grid_z3[r + 1][c])))
+                    self._solver.add(Implies(self._grid_z3[r][c], Not(self._grid_z3[r + 1][c])))
                     if c > 0:
-                        self._solver.add(z3.Implies(self._grid_z3[r][c], z3.Not(self._grid_z3[r][c - 1])))
-                        self._solver.add(z3.Implies(self._grid_z3[r][c], z3.Not(self._grid_z3[r + 1][c - 1])))
+                        self._solver.add(Implies(self._grid_z3[r][c], Not(self._grid_z3[r][c - 1])))
+                        self._solver.add(Implies(self._grid_z3[r][c], Not(self._grid_z3[r + 1][c - 1])))
                     if c < self.columns_number - 1:
-                        self._solver.add(z3.Implies(self._grid_z3[r][c], z3.Not(self._grid_z3[r][c + 1])))
-                        self._solver.add(z3.Implies(self._grid_z3[r][c], z3.Not(self._grid_z3[r + 1][c + 1])))
+                        self._solver.add(Implies(self._grid_z3[r][c], Not(self._grid_z3[r][c + 1])))
+                        self._solver.add(Implies(self._grid_z3[r][c], Not(self._grid_z3[r + 1][c + 1])))
 
     def add_free_over_tree_constraint(self):
         for r in range(self.rows_number):
             for c in range(self.columns_number):
                 if self._grid[r][c] == TentsSolverZ3.tree_value:
-                    self._solver.add(z3.Not(self._grid_z3[r][c]))
+                    self._solver.add(Not(self._grid_z3[r][c]))
 
     def add_one_tent_for_each_tree_constraint(self):
         for r in range(self.rows_number):
@@ -98,6 +99,7 @@ T = TentsSolverZ3.tree_value
 _ = 0
 
 
+# noinspection DuplicatedCode
 class TentsSolverZ3Tests(TestCase):
     def test_solution_6x6(self):
         grid = [
