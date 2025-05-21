@@ -41,7 +41,7 @@ def solve_tsp_with_scip(distances):
                     name=f"mtz_{i}_{j}"
                 )
 
-    model.setRealParam('limits/time', 60)
+    model.setRealParam('limits/time', 300)
     model.setIntParam('display/verblevel', 0)
     model.optimize()
     status = model.getStatus()

@@ -36,8 +36,7 @@ def solve_tsp_with_pulp(distances):
             if i != j:
                 model += u[j] >= u[i] + 1 - n * (1 - x[i, j])
 
-    # Set time limit to 60 seconds
-    model.solve(pulp.PULP_CBC_CMD(timeLimit=90, msg=False))
+    model.solve(pulp.PULP_CBC_CMD(timeLimit=300, msg=False))
 
     # Check if a solution was found
     if model.status == pulp.LpStatusOptimal or model.status == pulp.LpStatusNotSolved:
