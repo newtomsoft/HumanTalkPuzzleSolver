@@ -8,9 +8,9 @@ _ = 0
 def solve_sudoku(initial_grid: list[list]) -> None:
     start_time = time.time()
     line_size = len(initial_grid)
-    cell_size = int(line_size ** 0.5)
+    sub_square_size = int(line_size ** 0.5)
     line = list(range(0, line_size))
-    cell = list(range(0, cell_size))
+    in_sub_square = list(range(0, sub_square_size))
 
     print("initial grid:")
     for i in line:
@@ -29,12 +29,12 @@ def solve_sudoku(initial_grid: list[list]) -> None:
     for j in line:
         solver.add(Distinct([grid_z3[(i, j)] for i in line]))
 
-    for i in cell:
-        for j in cell:
+    for i in in_sub_square:
+        for j in in_sub_square:
             one_cell = []
-            for di in cell:
-                for dj in cell:
-                    one_cell.append(grid_z3[(i * cell_size + di, j * cell_size + dj)])
+            for di in in_sub_square:
+                for dj in in_sub_square:
+                    one_cell.append(grid_z3[(i * sub_square_size + di, j * sub_square_size + dj)])
             solver.add(Distinct(one_cell))
 
     for i in line:
