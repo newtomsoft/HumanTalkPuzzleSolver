@@ -33,10 +33,8 @@ class NumberLinkSolverORTools:
         for r in range(self.rows_number):
             for c in range(self.columns_number):
                 value = self._grid[r][c]
-                if value >= 1:
+                if value >= 0:
                     self._model.Add(self._grid_ortools[r][c] == value)
-                else:
-                    self._model.Add(self._grid_ortools[r][c] >= 1)
 
     def _add_neighbors_count_constraints(self):
         for r in range(self.rows_number):

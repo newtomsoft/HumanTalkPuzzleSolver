@@ -18,7 +18,7 @@ class NumberLinkSolverZ3:
         for r in range(self.rows_number):
             for c in range(self.columns_number):
                 self._grid_z3[(r, c)] = Int(f"cell{r}_{c}")
-                self._solver.add(self._grid_z3[(r, c)] >= 1)
+                self._solver.add(self._grid_z3[(r, c)] >= 0)
                 self._solver.add(self._grid_z3[(r, c)] <= max(self.rows_number, self.columns_number))
 
         self._add_constraints()
@@ -37,7 +37,7 @@ class NumberLinkSolverZ3:
         for r in range(self.rows_number):
             for c in range(self.columns_number):
                 value = self._grid[r][c]
-                if value >= 1:
+                if value >= 0:
                     self._solver.add(self._grid_z3[(r, c)] == value)
 
     def _add_neighbors_count_constraints(self):
@@ -53,18 +53,14 @@ class NumberLinkSolverZ3:
                 if c < self.columns_number - 1:
                     neighbors_positions.append((r, c + 1))
 
-                # Count neighbors with the same value
                 same_value_neighbors = []
                 for neighbor_pos in neighbors_positions:
                     same_value = self._grid_z3[(r, c)] == self._grid_z3[neighbor_pos]
                     same_value_neighbors.append(same_value)
 
-                # Apply the constraint based on whether the cell is a number or a path
-                if self._grid[r][c] >= 1:
-                    # Number cells must have exactly one neighbor with the same value
+                if self._grid[r][c] >= 0:
                     self._solver.add(Sum(same_value_neighbors) == 1)
                 else:
-                    # Path cells must have exactly two neighbors with the same value
                     self._solver.add(Sum(same_value_neighbors) == 2)
 
 
