@@ -9,11 +9,11 @@ class MinesweeperSolverBrutForce:
         self._solution = [[0 for _ in range(self.columns_number)] for _ in range(self.rows_number)]
 
     def get_solution(self):
-        # Create a list of unknown cells (cells with value -1)
+        # Create a list of unknown cells (cells with value _)
         unknown_cells = []
         for r in range(self.rows_number):
             for c in range(self.columns_number):
-                if self._grid[r][c] == -1:
+                if self._grid[r][c] == _:
                     unknown_cells.append((r, c))
 
         # Start with all cells set to 0 (no mines)
@@ -49,7 +49,7 @@ class MinesweeperSolverBrutForce:
         """Check if the current partial solution is valid for all known cells."""
         for r in range(self.rows_number):
             for c in range(self.columns_number):
-                if self._grid[r][c] != -1:  # Only check cells with known values
+                if self._grid[r][c] != _:  # Only check cells with known values
                     # A cell with a known value cannot have a mine
                     if self._solution[r][c] == 1:
                         return False
@@ -66,7 +66,7 @@ class MinesweeperSolverBrutForce:
         """Check if the complete solution is valid."""
         for r in range(self.rows_number):
             for c in range(self.columns_number):
-                if self._grid[r][c] != -1:  # Only check cells with known values
+                if self._grid[r][c] != _:  # Only check cells with known values
                     # A cell with a known value cannot have a mine
                     if self._solution[r][c] == 1:
                         return False
@@ -82,8 +82,8 @@ class MinesweeperSolverBrutForce:
     def _count_mines_around(self, r, c):
         """Count the number of mines around a cell."""
         count = 0
-        for dr in [-1, 0, 1]:
-            for dc in [-1, 0, 1]:
+        for dr in [_, 0, 1]:
+            for dc in [_, 0, 1]:
                 if dr == 0 and dc == 0:
                     continue
                 nr, nc = r + dr, c + dc
@@ -95,7 +95,6 @@ class MinesweeperSolverBrutForce:
 _ = -1
 
 
-# noinspection DuplicatedCode
 class Test(TestCase):
     def test_solution_basic_grid(self):
         grid = [
@@ -112,7 +111,7 @@ class Test(TestCase):
         ]
         self.assertEqual(expected_solution, solution)
 
-    def test_solution_5x5(self):
+    def test_solution_5x5_16(self):
         grid = [
             [_, _, _, 1, _],
             [1, _, 3, _, 3],
@@ -131,8 +130,31 @@ class Test(TestCase):
         ]
         self.assertEqual(expected_solution, solution)
 
+    def test_solution_7x7_easy_30(self):
+        grid = [
+            [_, 1, _, _, 1, 1, _],
+            [_, _, 2, 1, _, _, 0],
+            [3, _, _, _, 3, 3, _],
+            [2, _, 2, _, _, _, _],
+            [1, _, _, _, 2, _, _],
+            [_, 1, 2, _, 1, 2, _],
+            [1, _, _, _, _, _, 1]
+        ]
+        game_solver = MinesweeperSolverBrutForce(grid)
+        solution = game_solver.get_solution()
+        expected_solution = [
+            [0, 0, 0, 0, 0, 0, 0],
+            [0, 1, 0, 0, 1, 0, 0],
+            [0, 1, 0, 0, 0, 0, 0],
+            [0, 1, 0, 0, 1, 1, 0],
+            [0, 0, 0, 0, 0, 0, 1],
+            [0, 0, 0, 0, 0, 0, 1],
+            [0, 1, 0, 1, 0, 0, 0]
+        ]
+        self.assertEqual(expected_solution, solution)
+
     @skip("2mn for this test")
-    def test_solution_7x7(self):
+    def test_solution_7x7_32(self):
         grid = [
             [_, 2, _, _, _, _, _],
             [_, _, 3, _, 2, 2, _],
@@ -156,7 +178,7 @@ class Test(TestCase):
         self.assertEqual(expected_solution, solution)
 
     @skip("7 years for this test ?")
-    def test_solution_10x10(self):
+    def test_solution_10x10_64(self):
         grid = [
             [_, 1, _, _, _, _, 2, _, _, _],
             [1, 2, _, 2, _, 2, _, 1, 1, 1],

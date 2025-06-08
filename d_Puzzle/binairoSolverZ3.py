@@ -28,22 +28,22 @@ class BinairoSolverZ3:
         self._add_unique_line_constraints()
 
     def _add_initial_constraints(self):
-        for r in range(self.rows_number):
-            for c in range(self.columns_number):
-                if self._grid[r][c] == 1:
-                    self._solver.add(self._grid_z3[r][c])
+        for row in range(self.rows_number):
+            for col in range(self.columns_number):
+                if self._grid[row][col] == 1:
+                    self._solver.add(self._grid_z3[row][col])
                     continue
-                if self._grid[r][c] == 0:
-                    self._solver.add(Not(self._grid_z3[r][c]))
+                if self._grid[row][col] == 0:
+                    self._solver.add(Not(self._grid_z3[row][col]))
                     continue
 
     def _add_half_true_false_by_line_constraints(self):
         half_columns = self.columns_number // 2
         half_rows = self.rows_number // 2
         for row_z3 in self._grid_z3:
-            self._solver.add(sum([row_z3[col] for col in range(self.columns_number)]) == half_columns)
+            self._solver.add(sum([cell for cell in row_z3]) == half_columns)
         for column_z3 in zip(*self._grid_z3):
-            self._solver.add(sum([column_z3[row] for row in range(self.rows_number)]) == half_rows)
+            self._solver.add(sum([cell for cell in column_z3]) == half_rows)
 
     def _add_not_same_3_adjacent_constraints(self):
         for row in range(self.rows_number):

@@ -1,10 +1,12 @@
-from z3 import Int, Solver, sat
+import math
+
+from z3 import Solver, sat, Ints
 from ortools.linear_solver import pywraplp
 
 # ---- Z3 Solver ----
 # Créer des variables entières
-x = Int('x')
-y = Int('y')
+x, y = Ints('x, y')
+
 
 # Créer un solveur
 solver = Solver()
@@ -39,6 +41,6 @@ status = solver.Solve()
 
 # Vérifier si le système a une solution
 if status == pywraplp.Solver.OPTIMAL:
-    print(f"Solution avec Or-Tools: x = {x.solution_value()}, y = {y.solution_value()}")
+    print(f"Solution avec Or-Tools: x = {int(x.solution_value())}, y = {int(y.solution_value())}")
 else:
     print("Pas de solution trouvée avec Or-Tools.")

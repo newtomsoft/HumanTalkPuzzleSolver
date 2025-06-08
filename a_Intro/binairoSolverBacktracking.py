@@ -2,7 +2,7 @@ from unittest import TestCase, skip
 
 
 # noinspection DuplicatedCode
-class BinairoSolverBrutForce:
+class BinairoSolverBacktracking:
     def __init__(self, grid: list[list]):
         self._grid = grid
         self.rows_number = len(grid)
@@ -17,11 +17,32 @@ class BinairoSolverBrutForce:
                 if self._grid[r][c] == -1:
                     unknown_cells.append((r, c))
 
-        # Try to solve using backtracking
+        # solve using backtracking
         if self._solve(unknown_cells, 0):
             return self._solution
         else:
             return [[]]
+
+    def _solve_brut_force(self, unknown_cells, index):
+        # Base case: all unknown cells have been assigned
+        if index >= len(unknown_cells):
+            return self._is_valid_solution()
+
+        r, c = unknown_cells[index]
+
+        # Try placing a 0
+        self._solution[r][c] = 0
+        if self._solve_brut_force(unknown_cells, index + 1):
+            return True
+
+        # Try placing a 1
+        self._solution[r][c] = 1
+        if self._solve_brut_force(unknown_cells, index + 1):
+            return True
+
+        # Neither option worked, backtrack
+        self._solution[r][c] = None
+        return False
 
     def _solve(self, unknown_cells, index):
         # Base case: all unknown cells have been assigned
@@ -74,13 +95,15 @@ class BinairoSolverBrutForce:
 
         # Check for duplicate rows
         for r in range(self.rows_number):
-            if r != row and all(self._solution[r][c] is not None and self._solution[row][c] is not None for c in range(self.columns_number)):
+            if r != row and all(self._solution[r][c] is not None and self._solution[row][c] is not None for c in
+                                range(self.columns_number)):
                 if all(self._solution[r][c] == self._solution[row][c] for c in range(self.columns_number)):
                     return False
 
         # Check for duplicate columns
         for c in range(self.columns_number):
-            if c != col and all(self._solution[r][c] is not None and self._solution[r][col] is not None for r in range(self.rows_number)):
+            if c != col and all(self._solution[r][c] is not None and self._solution[r][col] is not None for r in
+                                range(self.rows_number)):
                 if all(self._solution[r][c] == self._solution[r][col] for r in range(self.rows_number)):
                     return False
 
@@ -133,6 +156,27 @@ _ = -1
 
 # noinspection DuplicatedCode
 class BinairoSolverBrutForceTests(TestCase):
+    def test_solution_6x6(self):
+        grid = [
+            [_, _, _, _, _, _],
+            [_, _, _, _, _, _],
+            [_, _, _, _, 1, _],
+            [1, _, _, _, _, _],
+            [_, _, _, 1, _, 1],
+            [1, _, _, _, _, _],
+        ]
+        expected_grid = [
+            [0, 0, 1, 0, 1, 1],
+            [0, 0, 1, 1, 0, 1],
+            [1, 1, 0, 0, 1, 0],
+            [1, 0, 1, 0, 1, 0],
+            [0, 1, 0, 1, 0, 1],
+            [1, 1, 0, 1, 0, 0]
+        ]
+        game_solver = BinairoSolverBacktracking(grid)
+        solution = game_solver.get_solution()
+        self.assertEqual(expected_grid, solution)
+
     def test_solution_8x8(self):
         grid = [
             [_, _, _, _, _, _, _, _],
@@ -154,7 +198,7 @@ class BinairoSolverBrutForceTests(TestCase):
             [1, 0, 1, 0, 0, 1, 0, 1],
             [0, 1, 0, 0, 1, 1, 0, 1],
         ]
-        game_solver = BinairoSolverBrutForce(grid)
+        game_solver = BinairoSolverBacktracking(grid)
         solution = game_solver.get_solution()
         self.assertEqual(expected_grid, solution)
 
@@ -183,11 +227,11 @@ class BinairoSolverBrutForceTests(TestCase):
             [0, 0, 1, 1, 0, 1, 0, 1, 0, 1],
             [0, 1, 0, 1, 1, 0, 1, 0, 0, 1],
         ]
-        game_solver = BinairoSolverBrutForce(grid)
+        game_solver = BinairoSolverBacktracking(grid)
         solution = game_solver.get_solution()
         self.assertEqual(expected_grid, solution)
 
-    @skip("too long")
+    # @skip("Trop long pour être exécuté")
     def test_solution_20x20(self):
         grid = [
             [_, _, _, _, 0, 1, _, _, 0, 0, _, _, _, _, _, _, 0, _, _, 0],
@@ -233,6 +277,6 @@ class BinairoSolverBrutForceTests(TestCase):
             [0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 0, 1],
             [0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0]
         ]
-        game_solver = BinairoSolverBrutForce(grid)
+        game_solver = BinairoSolverBacktracking(grid)
         solution = game_solver.get_solution()
         self.assertEqual(expected_grid, solution)

@@ -5,7 +5,6 @@ from ortools.sat.python import cp_model
 _ = 0
 
 
-# noinspection DuplicatedCode
 def solve_sudoku(initial_grid: list[list]) -> None:
     start_time = time.time()
     model = cp_model.CpModel()
