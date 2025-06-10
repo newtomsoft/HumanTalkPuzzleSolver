@@ -1,6 +1,6 @@
 import math
 
-from z3 import Solver, sat, Ints
+from QueensZ3 import Solver, sat, Ints
 from ortools.linear_solver import pywraplp
 
 # ---- Z3 Solver ----

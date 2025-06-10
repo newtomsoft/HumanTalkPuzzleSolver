@@ -9,7 +9,7 @@
 
 # Quelle est la combinaison du cadenas qui satisfait toutes ces règles ?
 
-from z3 import *
+from QueensZ3 import *
 
 chiffres = [Int(f'c{i}') for i in range(1, 9)]
 c1, c2, c3, c4, c5, c6, c7, c8 = chiffres
