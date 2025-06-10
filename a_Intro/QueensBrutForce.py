@@ -1,4 +1,6 @@
+import time
 from itertools import permutations
+
 
 def brut_force_queens(n=4):
     for perm in permutations(range(n)):
@@ -15,4 +17,7 @@ def is_valid_solution(solution):
                 return False
     return True
 
-brut_force_queens(4)
+start_time = time.time()
+brut_force_queens(13)
+end_time = time.time()
+print(f"Temps d'exécution : {end_time - start_time:.3f} secondes")

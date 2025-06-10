@@ -1,3 +1,5 @@
+import time
+
 from ortools.sat.python import cp_model
 
 def queens_solver(n=4) -> None:
@@ -26,5 +28,7 @@ def queens_solver(n=4) -> None:
     print(f"  wall time      : {solver.wall_time:.3f} s")
 
 
-if __name__ == "__main__":
-    queens_solver(5)
+start_time = time.time()
+queens_solver(20)
+end_time = time.time()
+print(f"Temps d'exécution : {end_time - start_time:.3f} secondes")

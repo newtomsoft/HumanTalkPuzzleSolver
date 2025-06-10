@@ -1,3 +1,5 @@
+import time
+
 from z3 import Solver, Distinct, Int, sat
 
 def solve_queens_z3(n=4):
@@ -20,4 +22,7 @@ def solve_queens_z3(n=4):
             print(f"{str(queens[i])} C{model[queens[i]].as_long()}")
 
 
-solve_queens_z3(4)
+start_time = time.time()
+solve_queens_z3(20)
+end_time = time.time()
+print(f"Temps d'exécution : {end_time - start_time:.3f} secondes")

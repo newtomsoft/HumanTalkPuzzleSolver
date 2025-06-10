@@ -1,3 +1,6 @@
+import time
+
+
 def solve_queens_backtracking(n=4):
     def is_safe(board, row, col):
         for i in range(row):
@@ -24,6 +27,7 @@ def solve_queens_backtracking(n=4):
     for row, col in enumerate(solution):
         print(f" R{row} C{col}")
 
-solve_queens_backtracking(4)
-
-
+start_time = time.time()
+solve_queens_backtracking(20)
+end_time = time.time()
+print(f"Temps d'exécution : {end_time - start_time:.3f} secondes")
